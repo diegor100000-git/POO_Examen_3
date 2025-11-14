@@ -61,11 +61,11 @@ public class LibroController {
     Long idLibroCE = 0L;
 
     private Integer parseIntegerSafe(String value) {
-        if (value == null || value.trim().isEmpty()) return 0;
+        if (value == null || value.trim().isEmpty()) return null;
         try {
             return Integer.parseInt(value.trim());
         } catch (NumberFormatException e) {
-            return 0; // O puedes lanzar excepción si prefieres
+            return null;
         }
     }
     public void listar() {
@@ -80,16 +80,16 @@ public class LibroController {
 
     @FXML
     public void initialize() {
-
-        // Inicializar validador
         ValidatorFactory factory = Validation.buildDefaultValidatorFactory();
         validator = factory.getValidator();
 
-        // Cargar categorías en ComboBox
         cbxCategoria.getItems().addAll(categoriaService.listarCombobox());
         new ComboBoxAutoComplete<>(cbxCategoria);
-
-        // Configurar tabla
+        txtCantidadEjemplares.textProperty().addListener((obs, oldValue, newValue) -> {
+            if (!newValue.matches("\\d*")) {
+                txtCantidadEjemplares.setText(newValue.replaceAll("[^\\d]", ""));
+            }
+        });
         TableViewHelper<Libro> tableViewHelper = new TableViewHelper<>();
         LinkedHashMap<String, ColumnInfo> columns = new LinkedHashMap<>();
 
@@ -97,6 +97,7 @@ public class LibroController {
         columns.put("Nombre", new ColumnInfo("nombre", 200.0));
         columns.put("Ejemplares", new ColumnInfo("cantidadEjemplares", 100.0));
         columns.put("Categoría", new ColumnInfo("categoria.nombre", 200.0));
+
         Consumer<Libro> updateAction = (Libro libro) -> editForm(libro);
         Consumer<Libro> deleteAction = (Libro libro) -> {
             libroService.delete(libro.getIdLibro());
@@ -105,37 +106,6 @@ public class LibroController {
         };
         tableViewHelper.addColumnsInOrderWithSize(tableView, columns, updateAction, deleteAction);
         listar();
-        // === COLUMNA DE ACCIONES (BOTONES) ===
-        TableColumn<Libro, Void> colAcciones = new TableColumn<>("Acciones");
-
-        colAcciones.setCellFactory(col -> new TableCell<>() {
-
-            private final Button btnEdit = new Button("Editar");
-            private final Button btnDelete = new Button("Eliminar");
-            private final HBox container = new HBox(10, btnEdit, btnDelete);
-            {
-                container.setAlignment(Pos.CENTER);
-                btnEdit.setOnAction(e -> {
-                    Libro libro = getTableView().getItems().get(getIndex());
-                    editForm(libro);
-                });
-                btnDelete.setOnAction(e -> {
-                    Libro libro = getTableView().getItems().get(getIndex());
-                    libroService.delete(libro.getIdLibro());
-                    listar();
-                    Toast.showToast(new Stage(), "Libro eliminado", 2000, 400, 200);
-                });
-                btnEdit.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
-                btnDelete.setStyle("-fx-background-color: #E53935; -fx-text-fill: white;");
-            }
-            @Override
-            protected void updateItem(Void item, boolean empty) {
-                super.updateItem(item, empty);
-                setGraphic(empty ? null : container);
-            }
-        });
-        colAcciones.setPrefWidth(180);
-        tableView.getColumns().add(colAcciones);
     }
 
     public void clearForm() {
@@ -212,15 +182,30 @@ public class LibroController {
         clearForm();
         listar();
     }
+    @FXML
+    private void limpiarCampos() {
+        txtNombre.clear();
+        txtCantidadEjemplares.clear();
+        cbxCategoria.getSelectionModel().clearSelection();
+        txtCantidadEjemplares.clear();
+    }
 
     @FXML
     public void validarFormulario() {
         formulario = new Libro();
         formulario.setNombre(txtNombre.getText());
+
         formulario.setCantidadEjemplares(parseIntegerSafe(txtCantidadEjemplares.getText()));
+        if (formulario.getCantidadEjemplares() == null || formulario.getCantidadEjemplares() <= 0) {
+            lbnMsg.setText("La cantidad de ejemplares debe ser mayor que 0.");
+            lbnMsg.setStyle("-fx-text-fill: red; -fx-font-size: 16px;");
+            txtCantidadEjemplares.requestFocus();
+            return;
+        }
         String idCat = cbxCategoria.getSelectionModel().getSelectedItem() == null
                 ? "0" : cbxCategoria.getSelectionModel().getSelectedItem().getKey();
         formulario.setCategoria(idCat.equals("0") ? null : categoriaService.findById(Long.parseLong(idCat)));
+
         Set<ConstraintViolation<Libro>> violaciones = validator.validate(formulario);
         if (violaciones.isEmpty()) {
             procesarFormulario();

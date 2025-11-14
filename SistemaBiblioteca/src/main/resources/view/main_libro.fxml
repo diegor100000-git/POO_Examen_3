@@ -73,7 +73,7 @@
                                                 <Insets bottom="5.0" top="5.0" />
                                             </GridPane.margin>
                                         </Button>
-                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="btn, btn-lg, btn-danger" text="Cancelar" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#limpiarCampos" styleClass="btn, btn-lg, btn-danger" text="Cancelar" GridPane.columnIndex="2" GridPane.rowIndex="5">
                                             <GridPane.margin>
                                                 <Insets bottom="5.0" left="5.0" top="5.0" />
                                             </GridPane.margin>
