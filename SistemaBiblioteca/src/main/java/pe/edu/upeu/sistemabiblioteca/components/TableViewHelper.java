@@ -61,56 +61,42 @@ public class TableViewHelper<T> {
     private void addActionColumn(TableView<T> tableView, Consumer<T> updateAction, Consumer<T> deleteAction) {
         TableColumn<T, Void> actionColumn = new TableColumn<>("Acciones");
 
-        Callback<TableColumn<T, Void>, TableCell<T, Void>> cellFactory = new Callback<>() {
+        Callback<TableColumn<T, Void>, TableCell<T, Void>> cellFactory = param -> new TableCell<>() {
+
+            private final Button btnUpdate = new Button("Editar");
+            private final Button btnDelete = new Button("Eliminar");
+
+            {
+                btnUpdate.setStyle("-fx-background-color: #4CAF50; -fx-text-fill: white;");
+                btnDelete.setStyle("-fx-background-color: #F44336; -fx-text-fill: white;");
+
+                btnUpdate.setOnAction(event -> {
+                    T data = getTableView().getItems().get(getIndex());
+                    updateAction.accept(data);
+                });
+
+                btnDelete.setOnAction(event -> {
+                    T data = getTableView().getItems().get(getIndex());
+                    deleteAction.accept(data);
+                });
+            }
+
             @Override
-            public TableCell<T, Void> call(final TableColumn<T, Void> param) {
-                final TableCell<T, Void> cell = new TableCell<>() {
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
 
-                    // Crear las imágenes
-                    Image updateImage = new Image(getClass().getResource("/img/document-edit-icon.png").toExternalForm());
-                    Image deleteImage = new Image(getClass().getResource("/img/del-icon.png").toExternalForm());
-
-                    // Crear ImageView para los botones
-                    ImageView updateImageView = new ImageView(updateImage);
-                    ImageView deleteImageView = new ImageView(deleteImage);
-
-
-
-                    // Crear botones con los íconos en lugar de texto
-                    private final Button btnUpdate = new Button("", updateImageView);
-                    private final Button btnDelete = new Button("", deleteImageView);
-
-
-                    {
-                        btnUpdate.setOnAction(event -> {
-                            T data = getTableView().getItems().get(getIndex());
-                            updateAction.accept(data);  // Llama a la función pasada como parámetro para actualizar
-                        });
-
-                        btnDelete.setOnAction(event -> {
-                            T data = getTableView().getItems().get(getIndex());
-                            deleteAction.accept(data);  // Llama a la función pasada como parámetro para eliminar
-                        });
-                    }
-
-                    @Override
-                    public void updateItem(Void item, boolean empty) {
-                        super.updateItem(item, empty);
-                        if (empty) {
-                            setGraphic(null);
-                        } else {
-                            HBox buttons = new HBox(btnUpdate, btnDelete);
-                            buttons.setSpacing(10);
-                            setGraphic(buttons);
-                        }
-                    }
-                };
-                return cell;
+                if (empty) {
+                    setGraphic(null);
+                } else {
+                    HBox box = new HBox(btnUpdate, btnDelete);
+                    box.setSpacing(10);
+                    setGraphic(box);
+                }
             }
         };
 
         actionColumn.setCellFactory(cellFactory);
-        actionColumn.setPrefWidth(150);
+        actionColumn.setPrefWidth(180);
         tableView.getColumns().add(actionColumn);
     }
 

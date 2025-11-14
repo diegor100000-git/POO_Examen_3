@@ -43,7 +43,7 @@ public class LibroServiceImp implements ILibroService {
             for (Libro libro :
                     lRepo.listAutoCompletLibro(nombre + "%")) {
                 ModeloDataAutocomplet data = new ModeloDataAutocomplet();data.setIdx(libro.getNombre());
-                data.setNameDysplay(String.valueOf(libro.getIdLibro()));data.setOtherData(String.valueOf(libro.getLibroUnidad()));
+                data.setNameDysplay(String.valueOf(libro.getIdLibro()));
 
                 listarLibro.add(data);
             }

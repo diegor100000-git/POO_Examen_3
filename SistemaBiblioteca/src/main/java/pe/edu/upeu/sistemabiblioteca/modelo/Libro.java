@@ -16,6 +16,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "libro")
 public class Libro {
     @Id
+
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_libro")
     private Long idLibro;
@@ -25,9 +26,9 @@ public class Libro {
     @Column(name = "nombre", nullable = false, length = 120)
     private String nombre;
 
-
+    @NotNull(message = "La cantidad no puede estar vacía")
     @Column(name = "cantidad_ejemplares", nullable = false)
-    private Double CantidadEjemplares;
+    private Integer cantidadEjemplares;
 
     @NotNull(message = "Categoria no puede estar vacío")
     @ManyToOne
@@ -36,10 +37,4 @@ public class Libro {
             nullable = false, foreignKey = @ForeignKey(name =
             "FK_CATEGORIA_LIBRO") )
     private Categoria categoria;
-
-    @NotNull(message = "Libro unidad no puede estar vacío")
-    @ManyToOne@JoinColumn(name = "id_libro_unidad", referencedColumnName = "id_libro_unidad",
-            nullable = false, foreignKey = @ForeignKey(name =
-            "FK_UNIDADMEDIDA_PRODUCTO"))
-    private LibroUnidad libroUnidad;
 }

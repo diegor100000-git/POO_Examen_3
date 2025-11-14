@@ -45,7 +45,7 @@ public class LoginController {
         try {
             Usuario usuario = usuarioService.loginUsuario(txtUsuario.getText(), txtClave.getText());
             if (usuario != null) {
-                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/main_cliente.fxml"));
+                FXMLLoader loader = new FXMLLoader(getClass().getResource("/view/maingui.fxml"));
                 loader.setControllerFactory(context::getBean);
                 Parent mainRoot = loader.load();
 

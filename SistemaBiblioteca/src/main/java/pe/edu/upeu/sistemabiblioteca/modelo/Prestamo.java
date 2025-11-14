@@ -23,8 +23,6 @@ public class Prestamo {
     @Column(name = "dni_cliente", nullable = false)
     private String dniCliente;
 
-
-
     @Column(name = "fecha_prestamo", nullable = false, length = 20)
     private String fechaPrestamo;
 

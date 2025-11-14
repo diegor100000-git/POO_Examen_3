@@ -24,11 +24,6 @@ public class DetallePrestamo {
             nullable = false, foreignKey = @ForeignKey(name =
             "FK_DETALLE_PRESTAMO"))
     private Prestamo prestamo;
-    @ManyToOne
-    @JoinColumn(name = "id_libro_unidad", referencedColumnName = "id_libro_unidad",
-            nullable = false, foreignKey = @ForeignKey(name =
-            "FK_LIBRO_UNIDAD"))
-    private LibroUnidad libroUnidad;
 
     @Column(name = "estado", nullable = false)
     private String estado;
