@@ -12,6 +12,8 @@ import org.springframework.stereotype.Controller;
 import pe.edu.upeu.sistemabiblioteca.components.*;
 import pe.edu.upeu.sistemabiblioteca.dto.ModeloDataAutocomplet;
 
+import pe.edu.upeu.sistemabiblioteca.modelo.DetallePrestamo;
+import pe.edu.upeu.sistemabiblioteca.modelo.Libro;
 import pe.edu.upeu.sistemabiblioteca.modelo.Prestamo;
 import pe.edu.upeu.sistemabiblioteca.service.*;
 import java.util.SortedSet;
@@ -133,11 +135,26 @@ public class PrestamoController {
     }
 
     private void seleccionarLibro() {
-
         ModeloDataAutocomplet sel = actfLibro.getLastSelectedObject();
         if (sel == null) return;
+
+        lastLibro = sel;
+
         txtNombreLibro.setText(sel.getNameDysplay());
-        txtCategoria.setText(sel.getOtherData() != null ? sel.getOtherData() : "");
+
+        String other = sel.getOtherData();
+
+        if (other != null) {
+            // Si viene en formato "Categoria:Autor"
+            if (other.contains(":")) {
+                txtCategoria.setText(other.split(":")[0]);
+            } else {
+                // si solo viene la categoría sin ":"
+                txtCategoria.setText(other);
+            }
+        } else {
+            txtCategoria.clear();
+        }
 
         txtCantidad.clear();
     }
@@ -159,8 +176,10 @@ public class PrestamoController {
             Toast.showToast(stage, "Ingrese cantidad", 2000, 400, 50);
             return;
         }
+
+        int cant;
         try {
-            int cant = Integer.parseInt(txtCantidad.getText());
+            cant = Integer.parseInt(txtCantidad.getText());
             if (cant <= 0) {
                 Toast.showToast(stage, "Cantidad debe ser mayor que 0", 2000, 400, 50);
                 return;
@@ -169,20 +188,29 @@ public class PrestamoController {
             Toast.showToast(stage, "Cantidad inválida", 2000, 400, 50);
             return;
         }
-
         Prestamo prestamo = new Prestamo();
         prestamo.setDniCliente(txtRegDni.getText());
         prestamo.setFechaPrestamo(FechaPrestamo.getValue().toString());
         prestamo.setFechaRetorno(FechaRetorno.getValue().toString());
         prestamo.setDescripcion(txtDescripcion.getText());
 
-        Prestamo guardado = prestamoService.save(prestamo);
+        Prestamo prestamoGuardado = prestamoService.save(prestamo);
+        DetallePrestamo detalle = new DetallePrestamo();
+        detalle.setPrestamo(prestamoGuardado);
+        Libro lib = new Libro();
+        lib.setIdLibro(Long.valueOf(lastLibro.getIdx()));
+        lib.setNombre(txtNombreLibro.getText());
+        detalle.setLibro(lib);
+
+        detalle.setCantidad(cant);
+        DetallePrestamo detalleGuardado = detallePrestamoService.save(detalle);
+        tableView.getItems().add(prestamoGuardado);
 
         Toast.showToast(stage, "Préstamo registrado", 2000, 400, 50);
 
-        tableView.getItems().add(guardado);
         limpiarTodo();
     }
+
     public void limpiarTodo() {
 
         txtNombreApellido.clear();

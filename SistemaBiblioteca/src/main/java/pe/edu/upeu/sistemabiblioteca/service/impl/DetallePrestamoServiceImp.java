@@ -17,4 +17,5 @@ public class DetallePrestamoServiceImp extends CrudGenericoServiceImp <DetallePr
     protected ICrudGenericoRepository<DetallePrestamo, Long> getRepo() {
         return detallePrestamoRepositoryRepository;
     }
+
 }
