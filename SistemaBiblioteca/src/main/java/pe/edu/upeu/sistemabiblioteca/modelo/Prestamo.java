@@ -30,7 +30,7 @@ public class Prestamo {
     private String fechaRetorno;
 
     @Column(name = "descripcion", nullable = false)
-    private String Descripcion;
+    private String descripcion;
 
     @OneToMany(mappedBy = "prestamo", cascade = CascadeType.ALL,
             orphanRemoval = true)

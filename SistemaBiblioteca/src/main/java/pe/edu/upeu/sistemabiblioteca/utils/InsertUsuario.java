@@ -1,33 +1,37 @@
 package pe.edu.upeu.sistemabiblioteca.utils;
 
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import lombok.RequiredArgsConstructor;
+import org.springframework.boot.CommandLineRunner;
+import org.springframework.stereotype.Component;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 
-public class InsertUsuario {
+@Component
+@RequiredArgsConstructor
+public class InsertUsuario implements CommandLineRunner {
 
-    /*public static void main(String[] args) {
+    private final DataSource dataSource;
 
-        String url = "jdbc:sqlite:data/sistemabiblioteca.db";
+    @Override
+    public void run(String... args) throws Exception {
+        try (Connection con = dataSource.getConnection()) {
 
-        try (Connection con = DriverManager.getConnection(url)) {
             String sql = "INSERT INTO usuario (nombre_usuario, clave, estado) VALUES (?, ?, ?)";
+
             PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setString(1, "admin2");
-
-            ps.setString(2, "123");
-
-            ps.setString(3, "activo");
+            ps.setString(1, "admin2");   // usuario
+            ps.setString(2, "123");      // clave sin encriptar o encriptada
+            ps.setString(3, "activo");   // estado
 
             ps.executeUpdate();
-            System.out.println("Usuario insertado correctamente con contraseña encriptada.");
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
 
-       }
-        */
+            System.out.println("Usuario insertado correctamente usando CommandLineRunner.");
+        }
+        catch (Exception e) {
+            System.out.println("⚠ Error insertando usuario: " + e.getMessage());
+        }
     }
+}

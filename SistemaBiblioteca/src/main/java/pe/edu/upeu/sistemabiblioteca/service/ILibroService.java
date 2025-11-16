@@ -12,7 +12,10 @@ public interface ILibroService{
     Libro update(Libro libro);
     void delete(Long id);
     Libro findById(Long id);
+
+
+    List<ModeloDataAutocomplet> listAutoCompletLibro();
+
     List<ModeloDataAutocomplet> listAutoCompletLibro(String nombre);
-    public List<ModeloDataAutocomplet> listAutoCompletLibro();
 
 }

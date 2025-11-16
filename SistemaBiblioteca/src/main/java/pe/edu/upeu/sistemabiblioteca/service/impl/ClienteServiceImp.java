@@ -33,21 +33,24 @@ public class ClienteServiceImp extends CrudGenericoServiceImp<Cliente,String> im
 
     @Override
     public List<ModeloDataAutocomplet> listAutoCompletCliente() {
+
         List<ModeloDataAutocomplet> listarclientes = new ArrayList<>();
+
         try {
             for (Cliente cliente : clienteRepository.findAll()) {
+
                 ModeloDataAutocomplet data = new ModeloDataAutocomplet();
+
                 data.setIdx(cliente.getDni());
-                data.setNameDysplay(cliente.getNombres());
-                data.setOtherData(cliente.getApellido());
-                data.setOtherData(cliente.getDireccion());
-                data.setOtherData(cliente.getTelefono());
+                data.setNameDysplay(cliente.getNombres() + " " + cliente.getApellido());
+                data.setOtherData(cliente.getDireccion() + ":" + cliente.getTelefono());
 
                 listarclientes.add(data);
             }
         } catch (Exception e) {
             logger.error("Error durante la operación", e);
         }
+
         return listarclientes;
     }
 }

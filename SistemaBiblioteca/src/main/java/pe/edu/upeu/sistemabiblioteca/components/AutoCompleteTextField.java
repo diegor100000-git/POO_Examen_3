@@ -1,5 +1,6 @@
 package pe.edu.upeu.sistemabiblioteca.components;
 
+import javafx.application.Platform;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.geometry.Side;
@@ -9,64 +10,58 @@ import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.layout.VBox;
 
+import java.util.List;
 import java.util.SortedSet;
 
-public class AutoCompleteTextField<T>{
+public class AutoCompleteTextField<T> {
 
-    private TextField autoCompleteTextField;
+    private final TextField autoCompleteTextField;
     private final SortedSet<T> entries;
     private final ContextMenu entryMenu = new ContextMenu();
-    VBox vbox = new VBox();
     private T lastSelectedObject;
 
     public AutoCompleteTextField(SortedSet<T> entries, TextField autTF) {
         this.entries = entries;
-        this.autoCompleteTextField=autTF;
-        //this.autoCompleteTextField.setOnKeyReleased(this::handleKeyReleased);
-        this.autoCompleteTextField.setOnKeyTyped(this::handleKeyReleased);
+        this.autoCompleteTextField = autTF;
+        autoCompleteTextField.setOnKeyReleased(this::handleKeyReleased);
     }
 
-    public void handleKeyReleased(KeyEvent event) {
-        acccion();
+    private void handleKeyReleased(KeyEvent event) {
+        showSuggestions();
     }
 
-    // Método para manejar clics del mouse
+    private void showSuggestions() {
+        String text = autoCompleteTextField.getText().toLowerCase();
 
+        if (text.isEmpty()) {
+            entryMenu.hide();
+            return;
+        }
 
-    public void acccion(){
-        ObservableList<MenuItem> menuItems = FXCollections.observableArrayList();
-        String input = this.autoCompleteTextField.getText().toLowerCase();
-
-        // Filtro de elementos que coinciden con la entrada
-        entries.stream()
-                .filter(e -> e.toString().toLowerCase().contains(input))
-                .forEach(entry -> {
-                    MenuItem item = new MenuItem(entry.toString());
-                    //vbox.getChildren().add(new Button(item.getText()));
-                    item.setOnAction(e -> {
-                        this.autoCompleteTextField.setText(entry.toString());
-                        lastSelectedObject = entry;
+        List<MenuItem> items = entries.stream()
+                .filter(e -> e.toString().toLowerCase().contains(text))
+                .limit(10)
+                .map(e -> {
+                    MenuItem item = new MenuItem(e.toString());
+                    item.setOnAction(ev -> {
+                        autoCompleteTextField.setText(e.toString());
+                        lastSelectedObject = e;
                         entryMenu.hide();
                     });
+                    return item;
+                })
+                .toList();
 
-                    menuItems.add(item);
-                    entryMenu.hide();
-                });
-        /*ScrollPane scrollPane = new ScrollPane(vbox);
-        scrollPane.setPrefHeight(150); // Altura del área de scroll
-        scrollPane.setFitToWidth(true);
-        CustomMenuItem scrollableItem = new CustomMenuItem(scrollPane, false);
-        entryMenu.getItems().setAll(scrollableItem);*/
-        entryMenu.getItems().setAll(menuItems);
-        if (!menuItems.isEmpty()) {
-            entryMenu.show(this.autoCompleteTextField, Side.BOTTOM, 0, 0);
-        } else {
+        if (items.isEmpty()) {
             entryMenu.hide();
+            return;
         }
-    }
 
-    public ContextMenu getEntryMenu() {
-        return entryMenu;
+        entryMenu.getItems().setAll(items);
+
+        Platform.runLater(() ->
+                entryMenu.show(autoCompleteTextField, Side.BOTTOM, 0, 0)
+        );
     }
 
     public T getLastSelectedObject() {

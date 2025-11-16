@@ -37,33 +37,62 @@ public class LibroServiceImp implements ILibroService {
     public Libro findById(Long id) {
         return lRepo.findById(id).orElse(null);
     }
-    public List<ModeloDataAutocomplet> listAutoCompletLibro(String nombre) {
+
+    @Override
+    public List<ModeloDataAutocomplet> listAutoCompletLibro() {
+
         List<ModeloDataAutocomplet> listarLibro = new ArrayList<>();
+
         try {
-            for (Libro libro :
-                    lRepo.listAutoCompletLibro(nombre + "%")) {
-                ModeloDataAutocomplet data = new ModeloDataAutocomplet();data.setIdx(libro.getNombre());
-                data.setNameDysplay(String.valueOf(libro.getIdLibro()));
+            for (Libro libro : lRepo.findAll()) {
+
+                ModeloDataAutocomplet data = new ModeloDataAutocomplet();
+
+                data.setIdx(String.valueOf(libro.getIdLibro()));
+                data.setNameDysplay(libro.getNombre());
+
+                // categoría como String
+                if (libro.getCategoria() != null) {
+                    data.setOtherData(libro.getCategoria().getNombre());
+                } else {
+                    data.setOtherData("Sin categoría");
+                }
 
                 listarLibro.add(data);
             }
         } catch (Exception e) {
-            logger.error("Error al realizar la busqueda", e);
+            logger.error("Error al obtener los libros", e);
         }
+
         return listarLibro;
     }
-    public List<ModeloDataAutocomplet> listAutoCompletLibro() {
+
+    @Override
+    public List<ModeloDataAutocomplet> listAutoCompletLibro(String nombre) {
+
         List<ModeloDataAutocomplet> listarLibro = new ArrayList<>();
+
         try {
-            for (Libro libro : lRepo.findAll())
-            {ModeloDataAutocomplet data = new ModeloDataAutocomplet();
+            for (Libro libro : lRepo.listAutoCompletLibro(nombre + "%")) {
+
+                ModeloDataAutocomplet data = new ModeloDataAutocomplet();
+
                 data.setIdx(String.valueOf(libro.getIdLibro()));
                 data.setNameDysplay(libro.getNombre());
+
+                // categoría como String
+                if (libro.getCategoria() != null) {
+                    data.setOtherData(libro.getCategoria().getNombre());
+                } else {
+                    data.setOtherData("Sin categoría");
+                }
+
                 listarLibro.add(data);
             }
         } catch (Exception e) {
-            logger.error("Error al realizar la busqueda", e);
+            logger.error("Error al realizar la búsqueda", e);
         }
+
         return listarLibro;
     }
 }
