@@ -22,9 +22,9 @@ public class InsertUsuario implements CommandLineRunner {
 
             PreparedStatement ps = con.prepareStatement(sql);
 
-            ps.setString(1, "admin2");   // usuario
-            ps.setString(2, "123");      // clave sin encriptar o encriptada
-            ps.setString(3, "activo");   // estado
+            ps.setString(1, "admin2");
+            ps.setString(2, "123");
+            ps.setString(3, "activo");
 
             ps.executeUpdate();
 

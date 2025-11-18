@@ -41,8 +41,6 @@ public class PrestamoController {
     AnchorPane miContenedor;
 
     Stage stage;
-
-    // Autocomplete con tipos correctos
     AutoCompleteTextField<ModeloDataAutocomplet> actfCliente;
     AutoCompleteTextField<ModeloDataAutocomplet> actfLibro;
 
@@ -145,11 +143,9 @@ public class PrestamoController {
         String other = sel.getOtherData();
 
         if (other != null) {
-            // Si viene en formato "Categoria:Autor"
             if (other.contains(":")) {
                 txtCategoria.setText(other.split(":")[0]);
             } else {
-                // si solo viene la categoría sin ":"
                 txtCategoria.setText(other);
             }
         } else {
@@ -213,6 +209,7 @@ public class PrestamoController {
 
     public void limpiarTodo() {
 
+        autocompCliente.clear();
         txtNombreApellido.clear();
         txtRegDni.clear();
         txtDireccion.clear();
