@@ -162,17 +162,19 @@ public class PrestamoController {
             Toast.showToast(stage, "Seleccione un cliente", 2000, 400, 50);
             return;
         }
+        if (txtNombreLibro.getText().isEmpty()) {
+            Toast.showToast(stage, "Seleccione un Libro", 2000, 400, 50);
+            return;
+        }
 
         if (FechaPrestamo.getValue() == null || FechaRetorno.getValue() == null) {
             Toast.showToast(stage, "Seleccione fechas", 2000, 400, 50);
             return;
         }
-
         if (txtCantidad.getText().isBlank()) {
             Toast.showToast(stage, "Ingrese cantidad", 2000, 400, 50);
             return;
         }
-
         int cant;
         try {
             cant = Integer.parseInt(txtCantidad.getText());
@@ -193,10 +195,10 @@ public class PrestamoController {
         Prestamo prestamoGuardado = prestamoService.save(prestamo);
         DetallePrestamo detalle = new DetallePrestamo();
         detalle.setPrestamo(prestamoGuardado);
-        Libro lib = new Libro();
-        lib.setIdLibro(Long.valueOf(lastLibro.getIdx()));
-        lib.setNombre(txtNombreLibro.getText());
-        detalle.setLibro(lib);
+        Libro libro = new Libro();
+        libro.setIdLibro(Long.valueOf(lastLibro.getIdx()));
+        libro.setNombre(txtNombreLibro.getText());
+        detalle.setLibro(libro);
 
         detalle.setCantidad(cant);
         DetallePrestamo detalleGuardado = detallePrestamoService.save(detalle);
