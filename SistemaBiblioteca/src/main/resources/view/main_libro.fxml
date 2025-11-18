@@ -39,7 +39,6 @@
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                                         <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
-                                        <RowConstraints minHeight="10.0" prefHeight="30.0" vgrow="SOMETIMES" />
                               <RowConstraints />
                                     </rowConstraints>
                                     <children>
@@ -68,23 +67,21 @@
                                                 <Insets right="5.0" />
                                             </GridPane.margin>
                                         </ComboBox>
-                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#validarFormulario" styleClass="btn, btn-lg, btn-primary" text="Guardar" GridPane.columnIndex="1" GridPane.rowIndex="5">
+                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#validarFormulario" styleClass="btn, btn-lg, btn-primary" text="Guardar" GridPane.columnIndex="1" GridPane.rowIndex="4">
                                             <GridPane.margin>
                                                 <Insets bottom="5.0" top="5.0" />
                                             </GridPane.margin>
                                         </Button>
-                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#limpiarCampos" styleClass="btn, btn-lg, btn-danger" text="Cancelar" GridPane.columnIndex="2" GridPane.rowIndex="5">
+                                        <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#limpiarCampos" styleClass="btn, btn-lg, btn-danger" text="Cancelar" GridPane.columnIndex="2" GridPane.rowIndex="4">
                                             <GridPane.margin>
                                                 <Insets bottom="5.0" left="5.0" top="5.0" />
                                             </GridPane.margin>
                                         </Button>
-                                        <Label fx:id="lbnMsg" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="7" GridPane.rowSpan="2" GridPane.valignment="TOP">
+                                        <Label fx:id="lbnMsg" alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Label" GridPane.columnSpan="2147483647" GridPane.halignment="LEFT" GridPane.rowIndex="6" GridPane.rowSpan="2" GridPane.valignment="TOP">
                                             <GridPane.margin>
                                                 <Insets left="5.0" top="5.0" />
                                             </GridPane.margin>
                                         </Label>
-                              <Label prefHeight="17.0" prefWidth="116.0" text="Cantidad Ejemplares" GridPane.rowIndex="3" />
-                              <TextField fx:id="txtCantidadEjemplares" GridPane.columnIndex="1" GridPane.rowIndex="3" />
                                     </children>
                                 </GridPane>
                             </children>

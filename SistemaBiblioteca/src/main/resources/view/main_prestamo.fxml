@@ -75,7 +75,6 @@
                             </GridPane.margin></TextField>
                         <Label text="Nombre:" GridPane.columnIndex="1" />
                         <Label text="categoria:" GridPane.columnIndex="2" GridPane.columnSpan="2" />
-                        <Label prefHeight="18.0" prefWidth="63.0" text="Cantidad:" GridPane.columnIndex="3" />
                   <TextField fx:id="txtNombreLibro" GridPane.columnIndex="1" GridPane.rowIndex="1">
                      <GridPane.margin>
                         <Insets right="5.0" />
@@ -86,11 +85,7 @@
                         <Insets right="5.0" />
                      </GridPane.margin>
                   </TextField>
-                  <TextField fx:id="txtCantidad" GridPane.columnIndex="3" GridPane.rowIndex="1">
-                     <GridPane.margin>
-                        <Insets right="5.0" />
-                     </GridPane.margin>
-                  </TextField>
+                  <Button fx:id="btnAñadir" mnemonicParsing="false" onAction="#añadirPrevisualizacion" prefHeight="55.0" prefWidth="108.0" text="Añadir" GridPane.columnIndex="3" GridPane.rowSpan="2147483647" />
                     </children>
                 </GridPane>
             </children>

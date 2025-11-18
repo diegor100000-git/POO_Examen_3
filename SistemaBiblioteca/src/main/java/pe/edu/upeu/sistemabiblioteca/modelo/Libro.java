@@ -26,10 +26,6 @@ public class Libro {
     @Column(name = "nombre", nullable = false, length = 120)
     private String nombre;
 
-    @NotNull(message = "La cantidad no puede estar vacía")
-    @Column(name = "cantidad_ejemplares", nullable = false)
-    private Integer cantidadEjemplares;
-
     @NotNull(message = "Categoria no puede estar vacío")
     @ManyToOne
     @JoinColumn(name = "id_categoria", referencedColumnName =

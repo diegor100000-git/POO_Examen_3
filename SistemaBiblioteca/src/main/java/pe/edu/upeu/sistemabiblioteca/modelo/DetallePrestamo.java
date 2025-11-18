@@ -25,10 +25,5 @@ public class DetallePrestamo {
     @ManyToOne
     @JoinColumn(name="id_libro", nullable = false)
     private Libro libro;
-
-    @NotNull(message = "La cantidad es obligatoria")
-    @Min(value = 1, message = "La cantidad debe ser mayor a 0")
-    @Column(name = "cantidad", nullable = false)
-    private Integer cantidad;
 }
 

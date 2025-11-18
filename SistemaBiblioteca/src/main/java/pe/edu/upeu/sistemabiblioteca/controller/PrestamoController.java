@@ -1,6 +1,8 @@
 package pe.edu.upeu.sistemabiblioteca.controller;
 
 import javafx.application.Platform;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
@@ -25,8 +27,8 @@ public class PrestamoController {
 
     @FXML
     TextField autocompCliente, txtNombreApellido, txtDireccion, txtTelefono,
-            autocompLibro, txtNombreLibro, txtCategoria, txtCantidad,
-            txtRegDni,txtDescripcion;
+            autocompLibro, txtNombreLibro, txtCategoria,
+            txtRegDni, txtDescripcion;
 
     @FXML
     TableView<Prestamo> tableView;
@@ -35,7 +37,7 @@ public class PrestamoController {
     DatePicker FechaPrestamo, FechaRetorno;
 
     @FXML
-    Button btnPrestamo;
+    Button btnPrestamo, btnAñadir, btnEliminar;
 
     @FXML
     AnchorPane miContenedor;
@@ -59,6 +61,8 @@ public class PrestamoController {
     @Autowired
     IDetallePrestamoService detallePrestamoService;
 
+    private ObservableList<Prestamo> previsualizacion = FXCollections.observableArrayList();
+
     private final SortedSet<ModeloDataAutocomplet> entriesClientes =
             new TreeSet<>((a, b) -> a.toString().compareToIgnoreCase(b.toString()));
 
@@ -69,23 +73,23 @@ public class PrestamoController {
     public void initialize() {
 
         Platform.runLater(() -> stage = (Stage) miContenedor.getScene().getWindow());
+
         listarClientes();
         listarLibros();
+
         actfCliente = new AutoCompleteTextField<>(entriesClientes, autocompCliente);
         actfLibro   = new AutoCompleteTextField<>(entriesLibros, autocompLibro);
 
         autocompCliente.setOnAction(e -> seleccionarCliente());
-        autocompCliente.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ENTER) seleccionarCliente();
-        });
+        autocompCliente.setOnKeyPressed(e -> { if (e.getCode() == KeyCode.ENTER) seleccionarCliente(); });
 
         autocompLibro.setOnAction(e -> seleccionarLibro());
-        autocompLibro.setOnKeyPressed(e -> {
-            if (e.getCode() == KeyCode.ENTER) seleccionarLibro();
-        });
+        autocompLibro.setOnKeyPressed(e -> { if (e.getCode() == KeyCode.ENTER) seleccionarLibro(); });
 
         personalizarTabla();
+        tableView.setItems(previsualizacion);
     }
+
     public void personalizarTabla() {
 
         TableColumn<Prestamo, String> colDni = new TableColumn<>("DNI");
@@ -100,10 +104,35 @@ public class PrestamoController {
         TableColumn<Prestamo, String> colDesc = new TableColumn<>("Descripción");
         colDesc.setCellValueFactory(new PropertyValueFactory<>("descripcion"));
 
+        TableColumn<Prestamo, Void> colAcciones = new TableColumn<>("Acciones");
+
+        colAcciones.setCellFactory(col -> new TableCell<>() {
+            private final Button btnEliminar = new Button("Eliminar");
+
+            {
+                btnEliminar.setOnAction(e -> {
+                    Prestamo p = getTableView().getItems().get(getIndex());
+                    if (p != null) {
+                        previsualizacion.remove(p);
+                        Toast.showToast(stage, "Eliminado de la lista", 2000, 400, 50);
+                    }
+                });
+
+                btnEliminar.setStyle(
+                        "-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 12px; -fx-cursor: hand;"
+                );
+            }
+
+            @Override
+            protected void updateItem(Void item, boolean empty) {
+                super.updateItem(item, empty);
+                setGraphic(empty ? null : btnEliminar);
+            }
+        });
         tableView.getColumns().clear();
-        tableView.getColumns().addAll(colDni, colFechaPrestamo, colFechaRetorno, colDesc);
-        tableView.setTableMenuButtonVisible(true);
+        tableView.getColumns().addAll(colDni, colFechaPrestamo, colFechaRetorno, colDesc, colAcciones);
     }
+
     public void listarClientes() {
         entriesClientes.clear();
         entriesClientes.addAll(cs.listAutoCompletCliente());
@@ -115,7 +144,6 @@ public class PrestamoController {
     }
 
     private void seleccionarCliente() {
-
         ModeloDataAutocomplet sel = actfCliente.getLastSelectedObject();
         if (sel == null) return;
 
@@ -140,87 +168,84 @@ public class PrestamoController {
 
         txtNombreLibro.setText(sel.getNameDysplay());
 
-        String other = sel.getOtherData();
-
-        if (other != null) {
-            if (other.contains(":")) {
-                txtCategoria.setText(other.split(":")[0]);
+        if (sel.getOtherData() != null) {
+            if (sel.getOtherData().contains(":")) {
+                txtCategoria.setText(sel.getOtherData().split(":")[0]);
             } else {
-                txtCategoria.setText(other);
+                txtCategoria.setText(sel.getOtherData());
             }
         } else {
             txtCategoria.clear();
         }
+    }
+    @FXML
+    public void añadirPrevisualizacion() {
 
-        txtCantidad.clear();
+        if (txtRegDni.getText().isEmpty()
+                || txtNombreLibro.getText().isEmpty()
+                || FechaPrestamo.getValue() == null
+                || FechaRetorno.getValue() == null) {
+
+            Toast.showToast(stage, "Complete todos los campos antes de añadir", 2000, 400, 50);
+            return;
+        }
+
+        Prestamo p = new Prestamo();
+        p.setDniCliente(txtRegDni.getText());
+        p.setFechaPrestamo(FechaPrestamo.getValue().toString());
+        p.setFechaRetorno(FechaRetorno.getValue().toString());
+        p.setDescripcion(txtDescripcion.getText());
+
+        previsualizacion.add(p);
+
+        Toast.showToast(stage, "Añadido", 2000, 400, 50);
+
+        limpiarTodo();
     }
 
     @FXML
     public void registrarPrestamo() {
 
-        if (txtRegDni.getText().isEmpty()) {
-            Toast.showToast(stage, "Seleccione un cliente", 2000, 400, 50);
-            return;
-        }
-        if (txtNombreLibro.getText().isEmpty()) {
-            Toast.showToast(stage, "Seleccione un Libro", 2000, 400, 50);
+        if (previsualizacion.isEmpty()) {
+            Toast.showToast(stage, "Primero añada elementos a la previsualización", 2000, 400, 50);
             return;
         }
 
-        if (FechaPrestamo.getValue() == null || FechaRetorno.getValue() == null) {
-            Toast.showToast(stage, "Seleccione fechas", 2000, 400, 50);
-            return;
+        for (Prestamo p : previsualizacion) {
+
+            Prestamo prestamoGuardado = prestamoService.save(p);
+
+            DetallePrestamo detalle = new DetallePrestamo();
+            detalle.setPrestamo(prestamoGuardado);
+
+            Libro libro = new Libro();
+            libro.setIdLibro(Long.valueOf(lastLibro.getIdx()));
+            libro.setNombre(txtNombreLibro.getText());
+            detalle.setLibro(libro);
+
+            detallePrestamoService.save(detalle);
         }
-        if (txtCantidad.getText().isBlank()) {
-            Toast.showToast(stage, "Ingrese cantidad", 2000, 400, 50);
-            return;
-        }
-        int cant;
-        try {
-            cant = Integer.parseInt(txtCantidad.getText());
-            if (cant <= 0) {
-                Toast.showToast(stage, "Cantidad debe ser mayor que 0", 2000, 400, 50);
-                return;
-            }
-        } catch (Exception e) {
-            Toast.showToast(stage, "Cantidad inválida", 2000, 400, 50);
-            return;
-        }
-        Prestamo prestamo = new Prestamo();
-        prestamo.setDniCliente(txtRegDni.getText());
-        prestamo.setFechaPrestamo(FechaPrestamo.getValue().toString());
-        prestamo.setFechaRetorno(FechaRetorno.getValue().toString());
-        prestamo.setDescripcion(txtDescripcion.getText());
 
-        Prestamo prestamoGuardado = prestamoService.save(prestamo);
-        DetallePrestamo detalle = new DetallePrestamo();
-        detalle.setPrestamo(prestamoGuardado);
-        Libro libro = new Libro();
-        libro.setIdLibro(Long.valueOf(lastLibro.getIdx()));
-        libro.setNombre(txtNombreLibro.getText());
-        detalle.setLibro(libro);
+        Toast.showToast(stage, "Préstamo(s) registrados en la BD", 2000, 400, 50);
 
-        detalle.setCantidad(cant);
-        DetallePrestamo detalleGuardado = detallePrestamoService.save(detalle);
-        tableView.getItems().add(prestamoGuardado);
-
-        Toast.showToast(stage, "Préstamo registrado", 2000, 400, 50);
-
+        previsualizacion.clear();
         limpiarTodo();
     }
 
-    public void limpiarTodo() {
+    private void limpiarDatosLibro() {
+        autocompLibro.clear();
+        txtNombreLibro.clear();
+        txtCategoria.clear();
+    }
 
+    public void limpiarTodo() {
         autocompCliente.clear();
         txtNombreApellido.clear();
         txtRegDni.clear();
         txtDireccion.clear();
         txtTelefono.clear();
 
-        autocompLibro.clear();
-        txtNombreLibro.clear();
-        txtCategoria.clear();
-        txtCantidad.clear();
+        limpiarDatosLibro();
 
         FechaPrestamo.setValue(null);
         FechaRetorno.setValue(null);

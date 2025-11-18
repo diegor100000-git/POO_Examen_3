@@ -32,7 +32,7 @@ import java.util.function.Consumer;
 @Controller
 public class LibroController {
     @FXML
-    private TextField txtNombre, txtCantidadEjemplares;
+    private TextField txtNombre;
 
     @FXML
     private ComboBox<ComboBoxOption> cbxCategoria;
@@ -85,17 +85,11 @@ public class LibroController {
 
         cbxCategoria.getItems().addAll(categoriaService.listarCombobox());
         new ComboBoxAutoComplete<>(cbxCategoria);
-        txtCantidadEjemplares.textProperty().addListener((obs, oldValue, newValue) -> {
-            if (!newValue.matches("\\d*")) {
-                txtCantidadEjemplares.setText(newValue.replaceAll("[^\\d]", ""));
-            }
-        });
         TableViewHelper<Libro> tableViewHelper = new TableViewHelper<>();
         LinkedHashMap<String, ColumnInfo> columns = new LinkedHashMap<>();
 
         columns.put("ID", new ColumnInfo("idLibro", 60.0));
         columns.put("Nombre", new ColumnInfo("nombre", 200.0));
-        columns.put("Ejemplares", new ColumnInfo("cantidadEjemplares", 100.0));
         columns.put("Categoría", new ColumnInfo("categoria.nombre", 200.0));
 
         Consumer<Libro> updateAction = (Libro libro) -> editForm(libro);
@@ -110,7 +104,6 @@ public class LibroController {
 
     public void clearForm() {
         txtNombre.clear();
-        txtCantidadEjemplares.clear();
         cbxCategoria.getSelectionModel().clearSelection();
 
         idLibroCE = 0L;
@@ -118,8 +111,6 @@ public class LibroController {
 
     public void editForm(Libro libro) {
         txtNombre.setText(libro.getNombre());
-        txtCantidadEjemplares.setText(libro.getCantidadEjemplares().toString());
-
         cbxCategoria.getSelectionModel().select(
                 cbxCategoria.getItems().stream()
                         .filter(opt -> Long.parseLong(opt.getKey()) == libro.getCategoria().getIdCategoria())
@@ -131,13 +122,9 @@ public class LibroController {
 
     private void mostrarErroresValidacion(List<ConstraintViolation<Libro>> violaciones) {
 
-        // Mapa ordenado de campos con el mismo nombre que la entidad
         Map<String, Control> campos = new LinkedHashMap<>();
         campos.put("nombre", txtNombre);
-        campos.put("cantidadEjemplares", txtCantidadEjemplares);
         campos.put("categoria", cbxCategoria);
-
-        // Donde se guardará el primer error encontrado
         Control primerControlConError = null;
         String mensajeError = null;
 
@@ -149,7 +136,7 @@ public class LibroController {
             if (violacion.isPresent()) {
                 mensajeError = violacion.get().getMessage();
                 primerControlConError = campos.get(campo);
-                break; // salimos al encontrar el primer error
+                break;
             }
         }
 
@@ -185,23 +172,14 @@ public class LibroController {
     @FXML
     private void limpiarCampos() {
         txtNombre.clear();
-        txtCantidadEjemplares.clear();
         cbxCategoria.getSelectionModel().clearSelection();
-        txtCantidadEjemplares.clear();
+
     }
 
     @FXML
     public void validarFormulario() {
         formulario = new Libro();
         formulario.setNombre(txtNombre.getText());
-
-        formulario.setCantidadEjemplares(parseIntegerSafe(txtCantidadEjemplares.getText()));
-        if (formulario.getCantidadEjemplares() == null || formulario.getCantidadEjemplares() <= 0) {
-            lbnMsg.setText("La cantidad de ejemplares debe ser mayor que 0.");
-            lbnMsg.setStyle("-fx-text-fill: red; -fx-font-size: 16px;");
-            txtCantidadEjemplares.requestFocus();
-            return;
-        }
         String idCat = cbxCategoria.getSelectionModel().getSelectedItem() == null
                 ? "0" : cbxCategoria.getSelectionModel().getSelectedItem().getKey();
         formulario.setCategoria(idCat.equals("0") ? null : categoriaService.findById(Long.parseLong(idCat)));
