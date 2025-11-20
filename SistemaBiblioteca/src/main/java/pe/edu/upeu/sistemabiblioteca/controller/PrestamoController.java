@@ -37,7 +37,7 @@ public class PrestamoController {
     DatePicker FechaPrestamo, FechaRetorno;
 
     @FXML
-    Button btnPrestamo, btnAñadir, btnEliminar;
+    Button btnPrestamo, btnAñadir;
 
     @FXML
     AnchorPane miContenedor;
@@ -46,7 +46,6 @@ public class PrestamoController {
     AutoCompleteTextField<ModeloDataAutocomplet> actfCliente;
     AutoCompleteTextField<ModeloDataAutocomplet> actfLibro;
 
-    ModeloDataAutocomplet lastCliente;
     ModeloDataAutocomplet lastLibro;
 
     @Autowired
@@ -117,12 +116,10 @@ public class PrestamoController {
                         Toast.showToast(stage, "Eliminado de la lista", 2000, 400, 50);
                     }
                 });
-
                 btnEliminar.setStyle(
                         "-fx-background-color: #d9534f; -fx-text-fill: white; -fx-font-size: 12px; -fx-cursor: hand;"
                 );
             }
-
             @Override
             protected void updateItem(Void item, boolean empty) {
                 super.updateItem(item, empty);
@@ -226,7 +223,7 @@ public class PrestamoController {
             detallePrestamoService.save(detalle);
         }
 
-        Toast.showToast(stage, "Préstamo(s) registrados en la BD", 2000, 400, 50);
+        Toast.showToast(stage, "Préstamo(s) registrados", 2000, 400, 50);
 
         previsualizacion.clear();
         limpiarTodo();

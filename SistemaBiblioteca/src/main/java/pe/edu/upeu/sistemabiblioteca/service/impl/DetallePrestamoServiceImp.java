@@ -12,8 +12,8 @@ import pe.edu.upeu.sistemabiblioteca.service.IDetallePrestamoService;
 public class DetallePrestamoServiceImp extends CrudGenericoServiceImp <DetallePrestamo, Long> implements IDetallePrestamoService {
 
     private final DetallePrestamoRepository detallePrestamoRepositoryRepository;
-    @Override
 
+    @Override
     protected ICrudGenericoRepository<DetallePrestamo, Long> getRepo() {
         return detallePrestamoRepositoryRepository;
     }

@@ -77,8 +77,6 @@ public class LibroServiceImp implements ILibroService {
 
                 data.setIdx(String.valueOf(libro.getIdLibro()));
                 data.setNameDysplay(libro.getNombre());
-
-                // categoría como String
                 if (libro.getCategoria() != null) {
                     data.setOtherData(libro.getCategoria().getNombre());
                 } else {

@@ -59,15 +59,6 @@ public class LibroController {
     ObservableList<Libro> listaLibros;
     Libro formulario;
     Long idLibroCE = 0L;
-
-    private Integer parseIntegerSafe(String value) {
-        if (value == null || value.trim().isEmpty()) return null;
-        try {
-            return Integer.parseInt(value.trim());
-        } catch (NumberFormatException e) {
-            return null;
-        }
-    }
     public void listar() {
         try {
             tableView.getItems().clear();

@@ -29,10 +29,10 @@ public class InsertUsuario implements CommandLineRunner {
             ps.setString(3, "activo");
 
             ps.executeUpdate();
-            System.out.println("Usuario insertado con contraseña encriptada.");
+            System.out.println("Usuario insertado");
         }
         catch (Exception e) {
-            System.out.println("⚠ Error insertando usuario: " + e.getMessage());
+            System.out.println("Error insertando usuario: " + e.getMessage());
         }
     }
 }
